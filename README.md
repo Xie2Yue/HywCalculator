@@ -10,7 +10,7 @@
 
 # Hyw Calculator
 
-A calculator project called "Hyw Calculator".
+A calculator project called "Hate Your Work".
 
 Currently under development with incomplete features, mainly for learning project development and algorithms.
 
