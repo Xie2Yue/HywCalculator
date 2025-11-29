@@ -1,13 +1,10 @@
-#include <iostream>
 #include "Console.h"
 
-Console HYW;
-
+Console HYWC;
 int main(){
 	
-	HYW.ConSoleInitialization("和亿位计算器 - By Xie2Yue喵 - v0.1");
-	HYW.ConsoleHywStart();
-	HYW.ConsoleHywSelect();
-	
+	HYWC.ConSoleInitialization("和亿位计算器 - By Xie2Yue喵 - v0.0.1");
+	HYWC.ConsoleHywStart();
+	HYWC.ConsoleHywSelect();
 	return 0;
 }

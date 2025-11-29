@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <iostream>
 #include <sstream>
+#include <random>
 
 #define ll long long
 #define mll ModuleLongLong
@@ -91,19 +92,29 @@ public:
         if (_len == 0) _isNegative = 0;
     }
     
-    friend std::ostream& operator << (std::ostream &bIout, BigInt t) {
-        if (!t._len) {
-            return bIout << 0;
+    
+    
+    std::string toString() {
+        std::stringstream ret;
+        if (!_len) {
+            return "0";
         }
-        ll tDigit;
-        if (t._isNegative) bIout << "-";
-        if (t._len == 1) return bIout << t._data.back();
-        bIout << t._data.back() << std::setfill('0');
-        for (int i = t._len - 2; i >= 0; --i) {
-            bIout << std::setw(8) << t._data[i];
+        if (_isNegative) {
+            ret << "-";
         }
-        bIout << std::setfill(' ');
-        return bIout;
+        if (_len == 1) {
+            ret << _data.back();
+            return ret.str();
+        }
+        ret << _data.back() << std::setfill('0');
+        for (int i = _len - 2; i >= 0; --i) {
+            ret << std::setw(8) << _data[i];
+        }
+        ret << std::setfill(' ');
+        return ret.str();
+    }
+    friend std::ostream& operator << (std::ostream &out, BigInt t) {
+    	return out<<t.toString();
     }
     
     friend std::istream& operator >> (std::istream &bIin, BigInt &t) {
@@ -317,6 +328,7 @@ public:
         return ret;
     }
     
+    
     BigInt operator << (const ll k) const {
         BigInt ret;
         ret._isNegative = _isNegative;
@@ -526,11 +538,15 @@ public:
     }
     
     BigInt getRandom(ll k) {
-        *this = BigInt((1ll << ((k - 1) % 32)) + rand() % (1ll << ((k - 1) % 32)));
+    	static std::random_device rd;
+    	static std::mt19937 gen(rd());
+    	std::uniform_int_distribution<> dis1(0, (1ll << ( (k - 1) % 32) ) - 1);
+    	std::uniform_int_distribution<> dis2(0, (1ll << 32) - 1 );
+        *this = BigInt((1ll << ((k - 1) % 32)) + dis1(gen));
         k -= (((k - 1) % 32) + 1);
         while (k) {
             *this *= BigInt(1ll << 32);
-            *this += BigInt(rand() % (1ll << 32));
+            *this += BigInt(dis2(gen));
             k -= 32;
         }
         return *this;
@@ -553,26 +569,6 @@ public:
         }
         if (_isNegative) return -ret;
         return ret;
-    }
-    
-    std::string toString() {
-        std::stringstream ret;
-        if (!_len) {
-            return "0";
-        }
-        if (_isNegative) {
-            ret << "-";
-        }
-        if (_len == 1) {
-            ret << _data.back();
-            return ret.str();
-        }
-        ret << _data.back() << std::setfill('0');
-        for (int i = _len - 2; i >= 0; --i) {
-            ret << std::setw(8) << _data[i];
-        }
-        ret << std::setfill(' ');
-        return ret.str();
     }
 };
 

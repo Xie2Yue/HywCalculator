@@ -61,9 +61,12 @@ public:
         return Fin;
     }
     
-    friend std::ostream& operator << (std::ostream &Fout, Fraction t) {
-        if (t._denomin == BigInt(1)) return Fout << t._numer;
-        return Fout << t._numer << "/" << t._denomin;
+    std::string toString() {
+        if (_denomin == BigInt(1)) return _numer.toString();
+        return _numer.toString() + "/" + _denomin.toString();
+    }
+    friend std::ostream& operator << (std::ostream &out, Fraction t) {
+    	return out << t.toString();
     }
     
     bool operator < (const Fraction t) const {
@@ -138,10 +141,6 @@ public:
         return (*this);
     }
     
-    std::string toString() {
-        if (_denomin == BigInt(1)) return _numer.toString();
-        return _numer.toString() + "/" + _denomin.toString();
-    }
 };
 
 Fraction abs(Fraction a);

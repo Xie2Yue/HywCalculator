@@ -7,7 +7,9 @@
 #include <conio.h>
 #include <stack>
 #include <ctime>
+#include <fstream>
 
+#include "Graph.h"
 #include "PolynomialFactorization.h"
 
 #define ll long long
@@ -46,6 +48,7 @@ enum ConsoleColor {
 
 class Console {
 private:
+	std::ofstream filePutter;
     void SetColor(ConsoleColor Color) {
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color);
     }
@@ -109,7 +112,7 @@ public:
             "║         和                      亿   亿亿亿亿亿亿亿        位   位位位位位位位     ║\n"
             "║                                                                                    ║\n"
             "║                                                                                    ║\n"
-            "║                                 和亿位计算器 v0.1                                  ║\n"
+            "║                                和亿位计算器 v0.0.1                                 ║\n"
             "║                                                                                    ║\n"
             "║                                   作者 : Xie2Yue                                   ║\n"
             "║                                                                                    ║\n"
@@ -549,21 +552,122 @@ public:
         );
     }
     
+    Graph outG;
+    void ConsoleHywRandomGraph() {
+    	char ch;
+    	int n = 0, m = 0, flag = 0;
+    	secondNumberRow = 20;
+    	printConsoleHywRandomGraph();
+    	while(1){
+    		ch=_getch();
+    		if(ch == 27) {
+    			return;
+			} else if('0' <= ch && ch <= '9') {
+				if(NumberStreamScaner.size() == 6) continue;
+				NumberStreamScaner.push_back(ch);
+				printAtPosition(secondNumberRow++, 4, ch);
+			} else if(ch == 8) {
+				if(NumberStreamScaner.size() == 0) continue;
+				NumberStreamScaner.pop_back();
+				printAtPosition(--secondNumberRow, 4, '_');
+			} else if(ch == 13) {
+				if(NumberStreamScaner.size() == 0) continue;
+				if(!flag) {
+					n = std::stoi(NumberStreamScaner);
+					NumberStreamScaner.clear();
+					flag = 1;
+					secondNumberRow = 37;
+				} else {
+					m = std::stoi(NumberStreamScaner);
+					NumberStreamScaner.clear();
+					flag = 0;
+					secondNumberRow = 20;
+					filePutter.open("graph.hyw");
+					outG.clear();
+					outG.createRandomConnectedGraph1(n, m);
+					filePutter << outG << "\n";
+					filePutter.close();
+					printAtPosition(20, 5, "已输出图到 graph.hyw");
+					if(_getch()== 27) return;
+					printConsoleHywRandomGraph();
+				}
+			}
+		}
+	}
+	
+	void printConsoleHywRandomGraph() {
+        clear();
+        printAtPosition(0, 0,
+            "╔════════════════════════════════════════════════════════════════════════════════════╗\n"
+            "║                                                                                    ║\n"
+            "║                                  输入点数、边数                                    ║\n"
+            "║                                                                                    ║\n"
+            "║          点数 n = ______  边数 m = ______                                          ║\n"
+            "║                                                                                    ║\n"
+            "╚════════════════════════════════════════════════════════════════════════════════════╝\n"
+        );
+	}
+    
+    void ConsoleHywGraphTheory() {
+    	char ch;
+    	while(1){
+    		printConsoleHywGraphTheory();
+    		ch=_getch();
+    		if(ch == 27) {
+    			return;
+			} else if(ch == '1') {
+				ConsoleHywRandomGraph();
+			}
+		}
+	}
+    
+    void printConsoleHywGraphTheory() {
+    	clear();
+        clear();
+        printAtPosition(0, 0,
+            "╔════════════════════════════════════════════════════════════════════════════════════╗\n"
+            "║                                                                                    ║\n"
+            "║          选择模式:                                                                 ║\n"
+            "║                                                                                    ║\n"
+            "║            1. 随机图生成(单源联通有向图)                                           ║\n"
+            "║                                                                                    ║\n"
+            "║            other. 敬请期待                                                         ║\n"
+            "║                                                                                    ║\n"
+            "║                                                                                    ║\n"
+            "║                                                                                    ║\n"
+            "║                                                                                    ║\n"
+            "║                                                                                    ║\n"
+            "║                                                                                    ║\n"
+            "║                                                                                    ║\n"
+            "║                                                                                    ║\n"
+            "║                                                                                    ║\n"
+            "║                                                                                    ║\n"
+            "║                                                                                    ║\n"
+            "║                                                                                    ║\n"
+            "║                                                                                    ║\n"
+            "║                                                                                    ║\n"
+            "║                                                                                    ║\n"
+            "║                                                                                    ║\n"
+            "╚════════════════════════════════════════════════════════════════════════════════════╝\n"
+        );
+	}
+    
     void ConsoleHywSelect() {
-        printConsoleHywSelect();
         char ch;
         while (1) {
+            printConsoleHywSelect();
             ch = _getch();
-            if (ch == '1') {
+            if(ch == 27) {
+            	return; 
+			} else if (ch == '1') {
                 ConsoleHywNormalCalculator();
             } else if (ch == '2') {
                 ConsoleHywNumberTheoryCalculator();
             } else if (ch == '3') {
                 ConsoleHywPolynomialFactorization();
-            } else if (ch == '4' || ch == 27) {
-                return;
+            } else if (ch == '4') {
+                ConsoleHywGraphTheory();
             }
-            printConsoleHywSelect();
         }
     }
     
@@ -576,13 +680,13 @@ public:
             "║                                                                                    ║\n"
             "║            1. 传统计算器 (初版，暂只支持有理数)                                    ║\n"
             "║                                                                                    ║\n"
-            "║            2. 数论工具 (初版，暂制支持整数环)                                      ║\n"
+            "║            2. 数论工具 (初版)                                                      ║\n"
             "║                                                                                    ║\n"
             "║            3. 因式分解 (初版，暂只支持首一整多项式)                                ║\n"
             "║                                                                                    ║\n"
-            "║            4. 退出计算器                                                           ║\n"
+            "║            4. 图论生成&计算                                                        ║\n"
             "║                                                                                    ║\n"
-            "║                                                                                    ║\n"
+            "║            ESC. 退出计算器                                                         ║\n"
             "║                                                                                    ║\n"
             "║                                                                                    ║\n"
             "║                                                                                    ║\n"
