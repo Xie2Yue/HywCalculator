@@ -11,43 +11,43 @@ extern BigInt Module;
 
 class ModuleLongLong {
 private:
-    BigInt _data;
+    BigInt data_;
     
 public:
     void moduleCheck() {
-        _data %= Module;
-        _data += Module;
-        _data %= Module;
+        data_ %= Module;
+        data_ += Module;
+        data_ %= Module;
     }
     
     friend BigInt::BigInt(mll data);
     
     mll() {}
     
-    mll(ll data) : _data(data) { moduleCheck(); }
+    mll(ll data) : data_(data) { moduleCheck(); }
     
-    mll(int data) : _data(data) { moduleCheck(); }
+    mll(int data) : data_(data) { moduleCheck(); }
     
-    mll(BigInt data) : _data(data) { moduleCheck(); }
+    mll(BigInt data) : data_(data) { moduleCheck(); }
     
     mll operator -() const {
-        return mll(Module - _data);
+        return mll(Module - data_);
     }
     
     mll operator + (const mll t) const {
-        return mll(_data + t._data);
+        return mll(data_ + t.data_);
     }
     
     mll operator - (const mll t) const {
-        return mll(_data - t._data);
+        return mll(data_ - t.data_);
     }
     
     mll operator * (const mll t) const {
-        return mll(_data * t._data);
+        return mll(data_ * t.data_);
     }
     
     mll inv() const {
-        return mll(exGcd(_data, Module)._b);
+        return mll(exGcd(data_, Module)._b);
     }
     
     mll operator / (const mll t) const {
@@ -70,11 +70,11 @@ public:
     }
     
     bool operator == (const mll t) const {
-        return _data == t._data;
+        return data_ == t.data_;
     }
     
     bool operator != (const mll t) const {
-        return _data != t._data;
+        return data_ != t.data_;
     }
     
     bool operator < (const mll t) const {
@@ -86,7 +86,7 @@ public:
     }
     
     friend std::ostream& operator << (std::ostream &MLLout, mll t) {
-        return MLLout << t._data;
+        return MLLout << t.data_;
     }
 };
 

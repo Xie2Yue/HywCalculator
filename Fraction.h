@@ -9,137 +9,195 @@
 extern std::string FractionBuf;
 
 class Fraction {
-private:
-    BigInt _numer, _denomin;
+	
+	private:
+		
+    BigInt numer_, denomin_;
     
-public:
+    // 约分
+    void reduce() {
+    	
+        if (numer_ == BigInt(0)) {
+        	
+            denomin_ = 1;
+            return;
+            
+        }
+        
+        if (denomin_ < BigInt(0)) {
+        	
+            denomin_ = -denomin_;
+            numer_ = -numer_;
+            
+        }
+        
+        if (denomin_ == BigInt(1)) { return; }
+        
+        BigInt d = gcd(numer_, denomin_);
+        denomin_ /= d;
+        numer_ /= d;
+        
+    }
+    
+	public:
+		
+	// ----------------------------- 构造函数 -------------------------
     friend BigInt::BigInt(Fraction t);
     
-    Fraction() : _denomin(1) {}
+    Fraction() : denomin_(1) {}
     
     template<typename _U>
-    Fraction(_U p, _U q) : _numer(p), _denomin(q) { reduce(); }
+    Fraction(_U p, _U q) : numer_(p), denomin_(q) { reduce(); }
     
     template<typename _U>
-    Fraction(_U m) : _numer(m), _denomin(1) {}
+    Fraction(_U m) : numer_(m), denomin_(1) {}
     
     Fraction(std::string data) {
+    	
         int slashPos = data.find('/');
+        
         if (slashPos == std::string::npos) {
-            _numer = BigInt(data);
-            _denomin = 1;
+        	
+            numer_ = BigInt(data);
+            denomin_ = 1;
+            
         } else {
-            _numer = BigInt(data.substr(0, slashPos));
-            _denomin = BigInt(data.substr(slashPos + 1));
+        	
+            numer_ = BigInt(data.substr(0, slashPos));
+            denomin_ = BigInt(data.substr(slashPos + 1));
+            
         }
+        
         reduce();
+        
     }
     
-    void reduce() {
-        if (_numer == BigInt(0)) {
-            _denomin = 1;
-            return;
-        }
-        if (_denomin < BigInt(0)) {
-            _denomin = -_denomin;
-            _numer = -_numer;
-        }
-        if (_denomin == BigInt(1)) return;
-        BigInt d = gcd(_numer, _denomin);
-        _denomin /= d;
-        _numer /= d;
-    }
-    
-    std::pair<BigInt, Fraction> getMixedFraction() {
-        BigInt ret(_numer / _denomin);
+    // 获得带分数
+    // 但是毫无卵用
+    std::pair<BigInt, Fraction> getMixedFraction() const {
+    	
+        BigInt ret(numer_ / denomin_);
+        
         return {ret, *this - ret};
+        
     }
     
+    // ----------------------------- 流式函数 -----------------------------
     friend std::istream& operator >> (std::istream &Fin, Fraction &t) {
+    	
         Fin >> FractionBuf;
         t = Fraction(FractionBuf);
         return Fin;
+        
     }
     
     std::string toString() {
-        if (_denomin == BigInt(1)) return _numer.toString();
-        return _numer.toString() + "/" + _denomin.toString();
-    }
-    friend std::ostream& operator << (std::ostream &out, Fraction t) {
-    	return out << t.toString();
+    	
+        if (denomin_ == BigInt(1)) return numer_.toString();
+        
+        return numer_.toString() + "/" + denomin_.toString();
+        
     }
     
+    friend std::ostream& operator << (std::ostream &out, Fraction t) {
+    	
+    	return out << t.toString();
+    	
+    }
+    
+    // ----------------------------- 比较函数 -----------------------------------
+    
     bool operator < (const Fraction t) const {
-        return _numer * t._denomin < t._numer * _denomin;
+    	
+        return numer_ * t.denomin_ < t.numer_ * denomin_;
+        
     }
     
     bool operator <= (const Fraction t) const {
-        return _numer * t._denomin <= t._numer * _denomin;
+    	
+        return numer_ * t.denomin_ <= t.numer_ * denomin_;
+        
     }
     
     bool operator > (const Fraction t) const {
-        return _numer * t._denomin > t._numer * _denomin;
+    	
+        return numer_ * t.denomin_ > t.numer_ * denomin_;
     }
+    
     
     bool operator >= (const Fraction t) const {
-        return _numer * t._denomin >= t._numer * _denomin;
+    	
+        return numer_ * t.denomin_ >= t.numer_ * denomin_;
     }
+    
     
     bool operator == (const Fraction t) const {
-        return _numer * t._denomin == t._numer * _denomin;
+    	
+        return numer_ * t.denomin_ == t.numer_ * denomin_;
     }
+    
     
     bool operator != (const Fraction t) const {
-        return _numer * t._denomin != t._numer * _denomin;
+    	
+        return numer_ * t.denomin_ != t.numer_ * denomin_;
+        
     }
     
-    Fraction operator -() {
-        return Fraction(-_numer, _denomin);
-    }
+    // -------------------------------- 数值运算 -------------------------------------
+    
+    Fraction operator -() { return Fraction(-numer_, denomin_); }
     
     Fraction operator + (const Fraction t) const {
-        Fraction ret(_numer * t._denomin + t._numer * _denomin, t._denomin * _denomin);
+    	
+        Fraction ret(numer_ * t.denomin_ + t.numer_ * denomin_, t.denomin_ * denomin_);
+        
         ret.reduce();
+        
         return ret;
+        
     }
     
     Fraction operator - (const Fraction t) const {
-        Fraction ret(_numer * t._denomin - t._numer * _denomin, t._denomin * _denomin);
+    	
+        Fraction ret(numer_ * t.denomin_ - t.numer_ * denomin_, t.denomin_ * denomin_);
+        
         ret.reduce();
+        
         return ret;
+        
     }
     
     Fraction operator * (const Fraction t) const {
-        Fraction ret(_numer * t._numer, _denomin * t._denomin);
+    	
+        Fraction ret(numer_ * t.numer_, denomin_ * t.denomin_);
+        
         ret.reduce();
+        
         return ret;
+        
     }
     
     Fraction operator / (const Fraction t) const {
-        Fraction ret(_numer * t._denomin, _denomin * t._numer);
+    	
+        Fraction ret(numer_ * t.denomin_, denomin_ * t.numer_);
+        
         ret.reduce();
+        
         return ret;
+        
     }
     
-    Fraction& operator += (const Fraction t) {
-        *this = *this + t;
-        return *this;
-    }
     
-    Fraction& operator -= (const Fraction t) {
-        *this = *this - t;
-        return *this;
-    }
+    // ------------------------- 自运算符重载 ------------------------------
     
-    Fraction& operator *= (const Fraction t) {
-        *this = *this * t;
-        return *this;
-    }
     
-    Fraction& operator /= (const Fraction t) {
-        *this = *this / t;
-        return (*this);
-    }
+    Fraction& operator += (const Fraction t) { *this = *this + t; return *this; }
+    
+    Fraction& operator -= (const Fraction t) { *this = *this - t; return *this; }
+    
+    Fraction& operator *= (const Fraction t) { *this = *this * t; return *this; }
+    
+    Fraction& operator /= (const Fraction t) { *this = *this / t; return *this; }
     
 };
 

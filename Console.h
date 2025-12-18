@@ -49,6 +49,7 @@ enum ConsoleColor {
 class Console {
 private:
 	std::ofstream filePutter;
+	std::ifstream fileReader;
     void SetColor(ConsoleColor Color) {
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color);
     }
@@ -65,6 +66,7 @@ private:
     }
     
     void clear() {
+    	
         system("cls");
     }
     
@@ -520,6 +522,7 @@ public:
                 }
             }
             auto pq = Polynomial<Q>(NumberStreamScaner);
+            NumberStreamScaner.clear();
             auto answer = PolynomialFactorization::Factorization(pq);
             auto outLen = answer.length();
             for (int i = 0; i <= outLen; ++i) {
@@ -563,7 +566,8 @@ public:
     		if(ch == 27) {
     			return;
 			} else if('0' <= ch && ch <= '9') {
-				if(NumberStreamScaner.size() == 6) continue;
+				if(!flag && NumberStreamScaner.size() == 6) continue;
+				else if(flag && NumberStreamScaner.size() == 7) continue;
 				NumberStreamScaner.push_back(ch);
 				printAtPosition(secondNumberRow++, 4, ch);
 			} else if(ch == 8) {
@@ -583,8 +587,7 @@ public:
 					flag = 0;
 					secondNumberRow = 20;
 					filePutter.open("graph.hyw");
-					outG.clear();
-					outG.createRandomConnectedGraph1(n, m);
+					outG.createRandomSingleSourceFullConnectedGraph1(n, m);
 					filePutter << outG << "\n";
 					filePutter.close();
 					printAtPosition(20, 5, "已输出图到 graph.hyw");
@@ -602,11 +605,65 @@ public:
             "║                                                                                    ║\n"
             "║                                  输入点数、边数                                    ║\n"
             "║                                                                                    ║\n"
-            "║          点数 n = ______  边数 m = ______                                          ║\n"
+            "║          点数 n = ______  边数 m = _______                                         ║\n"
             "║                                                                                    ║\n"
             "╚════════════════════════════════════════════════════════════════════════════════════╝\n"
         );
 	}
+    
+    void ConsoleHywAddNewRandomEdges() {
+    	char ch;
+    	int m = 0;
+    	secondNumberRow = 37;
+    	printConsoleHywAddNewRandomEdges();
+    	while(1){
+    		ch=_getch();
+    		if(ch == 27) {
+    			return;
+			} else if('0' <= ch && ch <= '9') {
+				if(NumberStreamScaner.size() == 7) continue;
+				NumberStreamScaner.push_back(ch);
+				printAtPosition(secondNumberRow++, 4, ch);
+			} else if(ch == 8) {
+				if(NumberStreamScaner.size() == 0) continue;
+				NumberStreamScaner.pop_back();
+				printAtPosition(--secondNumberRow, 4, '_');
+			} else if(ch == 13) {
+				if(NumberStreamScaner.size() == 0) continue;
+				m = std::stoi(NumberStreamScaner);
+				NumberStreamScaner.clear();
+				secondNumberRow = 37;
+				outG.clear();
+				fileReader.open("graph.hyw");
+				fileReader >> outG;
+				fileReader.close();
+				outG.addNewRandomEdges(m);
+				filePutter.open("graph.hyw");
+				filePutter << outG;
+				filePutter.close();
+				printAtPosition(20, 5, "已输出图到 graph.hyw");
+				if(_getch()== 27) return;
+				printConsoleHywAddNewRandomEdges();
+			}
+		}
+	}
+    
+    void printConsoleHywAddNewRandomEdges() {
+        clear();
+        printAtPosition(0, 0,
+            "╔════════════════════════════════════════════════════════════════════════════════════╗\n"
+            "║                                                                                    ║\n"
+            "║                                 输入新添加的边数                                   ║\n"
+            "║                                                                                    ║\n"
+            "║                           边数 m = _______                                         ║\n"
+            "║                                                                                    ║\n"
+            "║                           请确保图已经储存在 graph.hyw                             ║\n"
+            "║                                                                                    ║\n"
+            "╚════════════════════════════════════════════════════════════════════════════════════╝\n"
+        );
+	}
+    
+    
     
     void ConsoleHywGraphTheory() {
     	char ch;
@@ -617,13 +674,14 @@ public:
     			return;
 			} else if(ch == '1') {
 				ConsoleHywRandomGraph();
+			} else if(ch == '2') {
+				ConsoleHywAddNewRandomEdges();
 			}
 		}
 	}
     
     void printConsoleHywGraphTheory() {
     	clear();
-        clear();
         printAtPosition(0, 0,
             "╔════════════════════════════════════════════════════════════════════════════════════╗\n"
             "║                                                                                    ║\n"
@@ -631,9 +689,9 @@ public:
             "║                                                                                    ║\n"
             "║            1. 随机图生成(单源联通有向图)                                           ║\n"
             "║                                                                                    ║\n"
+            "║            2. 图增加边                                                             ║\n"
+            "║                                                                                    ║\n"
             "║            other. 敬请期待                                                         ║\n"
-            "║                                                                                    ║\n"
-            "║                                                                                    ║\n"
             "║                                                                                    ║\n"
             "║                                                                                    ║\n"
             "║                                                                                    ║\n"

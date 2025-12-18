@@ -17,13 +17,13 @@ extern std::string PolynomialBuf;
 template<typename _T = Fraction>
 class Polynomial {
 private:
-    std::vector<_T> _data;
+    std::vector<_T> data_;
     ll _deg;
     
 public:
     template<typename U> friend class Polynomial;
     
-    Polynomial() : _deg(0), _data() {}
+    Polynomial() : _deg(0), data_() {}
     
     Polynomial(std::string s) {
         int pos = 0, lpos = 0;
@@ -45,31 +45,31 @@ public:
             }
             lpos = pos;
         }
-        _data.resize(_deg = mx + 1);
+        data_.resize(_deg = mx + 1);
         for (auto u : vecs) {
             if (int mpos = u.find('^'); mpos != std::string::npos) {
                 std::string tmp = u.substr(0, mpos - 1);
                 if ((mpos == 2 && u[0] == '+') || mpos == 1) {
-                    _data[(ll)BigInt(u.substr(mpos + 1))] = 1;
+                    data_[(ll)BigInt(u.substr(mpos + 1))] = 1;
                 } else if (mpos == 2 && u[0] == '-') {
-                	_data[(ll)BigInt(u.substr(mpos + 1))] = -1;
+                	data_[(ll)BigInt(u.substr(mpos + 1))] = -1;
 				} else {
-                	_data[(ll)BigInt(u.substr(mpos + 1))] = _T(tmp);
+                	data_[(ll)BigInt(u.substr(mpos + 1))] = _T(tmp);
 				}
             } else if (int Xpos = u.find_first_of("Xx"); Xpos != std::string::npos) {
                 if ((Xpos == 1 && u[0] == '+') || Xpos == 0) {
-                	_data[1] = 1;
+                	data_[1] = 1;
 				} else if (Xpos == 1 && u[0] == '-') {
-                	_data[1] = -1;
+                	data_[1] = -1;
 				} else {
-                	_data[1] = _T(u.substr(0, Xpos));
+                	data_[1] = _T(u.substr(0, Xpos));
 				}
             } else {
-                _data[0] = _T(u);
+                data_[0] = _T(u);
             }
         }
-        while (_data.back() == (_T)0 && _deg > 1) {
-            _data.pop_back();
+        while (data_.back() == (_T)0 && _deg > 1) {
+            data_.pop_back();
             --_deg;
         }
     }
@@ -77,7 +77,7 @@ public:
     template<typename _U>
     Polynomial(Polynomial<_U> t) {
         _deg = t._deg;
-        for (auto digit : t._data) _data.push_back(_T(digit));
+        for (auto digit : t.data_) data_.push_back(_T(digit));
     }
     
     template<typename _U>
@@ -91,8 +91,8 @@ public:
         >::type* = nullptr) {
         if (digit != (_U)0) {
             _deg = 1;
-            _data.resize(1);
-            _data[0] = _T(digit);
+            data_.resize(1);
+            data_[0] = _T(digit);
         } else {
         	_deg = 0;
 		}
@@ -103,20 +103,20 @@ public:
         Polynomial<_U> ret;
         ret._deg = _deg;
         if constexpr (std::is_same_v<_U, mll> && std::is_same_v<_T, mll>) {
-            for (auto digit : _data) {
+            for (auto digit : data_) {
                 digit.moduleCheck();
-                ret._data.push_back(digit);
+                ret.data_.push_back(digit);
             }
         } else {
-            for (auto digit : _data) ret._data.push_back(_U(digit));
+            for (auto digit : data_) ret.data_.push_back(_U(digit));
         }
         ret.clearPrev0();
         return ret;
     }
     
     void clearPrev0() {
-        while (_data.size() && _data.back() == (_T)0) {
-            _data.pop_back();
+        while (data_.size() && data_.back() == (_T)0) {
+            data_.pop_back();
             --_deg;
         }
     }
@@ -126,32 +126,32 @@ public:
             return Pout << 0;
         }
         if (t._deg == 1) {
-            return Pout << t._data[0];
+            return Pout << t.data_[0];
         } else if (t._deg == 2) {
-            if (t._data[1] == (_T)0) return Pout << t._data[0];
-            else if (t._data[1] == (_T)1);
-            else if (t._data[1] > (_T)0) Pout << t._data[1];
-            else if (t._data[1] == (_T)-1) Pout << "-";
-            else Pout << t._data[1];
+            if (t.data_[1] == (_T)0) return Pout << t.data_[0];
+            else if (t.data_[1] == (_T)1);
+            else if (t.data_[1] > (_T)0) Pout << t.data_[1];
+            else if (t.data_[1] == (_T)-1) Pout << "-";
+            else Pout << t.data_[1];
             
             Pout << "x";
             
-            if (t._data[0] == (_T)0) return Pout;
-            else if (t._data[0] < (_T)0) return Pout << t._data[0];
-            else return Pout << "+" << t._data[0];
+            if (t.data_[0] == (_T)0) return Pout;
+            else if (t.data_[0] < (_T)0) return Pout << t.data_[0];
+            else return Pout << "+" << t.data_[0];
         } else {
-            if (t._data[t._deg - 1] == (_T)1);
-            else if (t._data[t._deg - 1] > (_T)0) Pout << t._data[t._deg - 1];
-            else if (t._data[t._deg - 1] == (_T)-1) Pout << "-";
-            else Pout << t._data[t._deg - 1];
+            if (t.data_[t._deg - 1] == (_T)1);
+            else if (t.data_[t._deg - 1] > (_T)0) Pout << t.data_[t._deg - 1];
+            else if (t.data_[t._deg - 1] == (_T)-1) Pout << "-";
+            else Pout << t.data_[t._deg - 1];
             
             Pout << "x^" << t._deg - 1;
             for (int i = t._deg - 2; i >= 0; --i) {
-                if (t._data[i] == (_T)0) continue;
-                else if (i != 0 && t._data[i] == (_T)1) Pout << "+";
-                else if (t._data[i] > (_T)0) Pout << "+" << t._data[i];
-                else if (i != 0 && t._data[i] == (_T)-1) Pout << "-";
-                else Pout << t._data[i];
+                if (t.data_[i] == (_T)0) continue;
+                else if (i != 0 && t.data_[i] == (_T)1) Pout << "+";
+                else if (t.data_[i] > (_T)0) Pout << "+" << t.data_[i];
+                else if (i != 0 && t.data_[i] == (_T)-1) Pout << "-";
+                else Pout << t.data_[i];
                 
                 if (i == 0) continue;
                 else if (i == 1) Pout << "x";
@@ -169,27 +169,27 @@ public:
     
     bool operator < (const Polynomial t) const {
         if (_deg == 0) {
-            return (_T)0 < t._data[0];
+            return (_T)0 < t.data_[0];
         }
         if (t._deg == 0) {
-            return _data[0] < (_T)0;
+            return data_[0] < (_T)0;
         }
         
-        if (_data[0] > (_T)0 && t._data[0] < (_T)0) {
+        if (data_[0] > (_T)0 && t.data_[0] < (_T)0) {
         	return 0;
 		}
-        else if (_data[0] < (_T)0 && t._data[0] > (_T)0) {
+        else if (data_[0] < (_T)0 && t.data_[0] > (_T)0) {
         	return 1;
-		} else if (_data[0] > (_T)0 && t._data[0] > (_T)0) {
+		} else if (data_[0] > (_T)0 && t.data_[0] > (_T)0) {
             if (_deg ^ t._deg) return _deg < t._deg;
             for (int i = 0; i < _deg; ++i) {
-                if (_data[i] != t._data[i]) return _data[i] < t._data[i];
+                if (data_[i] != t.data_[i]) return data_[i] < t.data_[i];
             }
             return 0;
-        } else if (_data[0] < (_T)0 && t._data[0] < (_T)0) {
+        } else if (data_[0] < (_T)0 && t.data_[0] < (_T)0) {
             if (_deg ^ t._deg) return _deg > t._deg;
             for (int i = 0; i < _deg; ++i) {
-                if (_data[i] != t._data[i]) return _data[i] > t._data[i];
+                if (data_[i] != t.data_[i]) return data_[i] > t.data_[i];
             }
             return 0;
         }
@@ -199,7 +199,7 @@ public:
     bool operator == (const Polynomial t) const {
         if (_deg ^ t._deg) return 0;
         for (int i = 0; i < _deg; ++i) {
-            if (_data[i] != t._data[i]) return 0;
+            if (data_[i] != t.data_[i]) return 0;
         }
         return 1;
     }
@@ -207,14 +207,14 @@ public:
     bool operator != (const Polynomial t) const {
         if (_deg ^ t._deg) return 1;
         for (int i = 0; i < _deg; ++i) {
-            if (_data[i] != t._data[i]) return 1;
+            if (data_[i] != t.data_[i]) return 1;
         }
         return 0;
     }
     
     Polynomial operator -() const {
         Polynomial ret = *this;
-        for (auto &digit : ret._data) {
+        for (auto &digit : ret.data_) {
             digit = -digit;
         }
         return ret;
@@ -223,14 +223,14 @@ public:
     Polynomial operator + (const Polynomial t) const {
         Polynomial ret;
         ret._deg = std::max(_deg, t._deg);
-        ret._data.resize(ret._deg);
+        ret.data_.resize(ret._deg);
         for (int i = 0; i < ret._deg; ++i) {
             if (i < _deg && i < t._deg) {
-                ret._data[i] = _data[i] + t._data[i];
+                ret.data_[i] = data_[i] + t.data_[i];
             } else if (i < _deg) {
-                ret._data[i] = _data[i];
+                ret.data_[i] = data_[i];
             } else if (i < t._deg) {
-                ret._data[i] = t._data[i];
+                ret.data_[i] = t.data_[i];
             }
         }
         ret.clearPrev0();
@@ -243,7 +243,7 @@ public:
     
     friend Polynomial operator * (Polynomial a, _T k) {
         Polynomial ret = a;
-        for (auto &digit : ret._data) {
+        for (auto &digit : ret.data_) {
             digit = k * digit;
         }
         return ret;
@@ -251,10 +251,10 @@ public:
     
     Polynomial operator * (const Polynomial t) const {
         Polynomial ret;
-        ret._data.resize(ret._deg = (_deg + t._deg));
+        ret.data_.resize(ret._deg = (_deg + t._deg));
         for (int i = 0; i < _deg; ++i) {
             for (int j = 0; j < t._deg; ++j) {
-                ret._data[i + j] = _data[i] * t._data[j] + ret._data[i + j];
+                ret.data_[i + j] = data_[i] * t.data_[j] + ret.data_[i + j];
             }
         }
         ret.clearPrev0();
@@ -264,9 +264,9 @@ public:
     Polynomial operator << (const ll k) const {
         if (k <= 0) return *this;
         Polynomial ret;
-        for (int i = 0; i < k; ++i) ret._data.push_back(0);
-        for (auto digit : _data) ret._data.push_back(digit);
-        ret._deg = ret._data.size();
+        for (int i = 0; i < k; ++i) ret.data_.push_back(0);
+        for (auto digit : data_) ret.data_.push_back(digit);
+        ret._deg = ret.data_.size();
         return ret;
     }
     
@@ -274,8 +274,8 @@ public:
         if (k <= 0) return *this;
         if (k > _deg) return 0;
         Polynomial ret = *this;
-        ret._data.erase(ret._data.begin(), ret._data.begin() + k);
-        ret._deg = ret._data.size();
+        ret.data_.erase(ret.data_.begin(), ret.data_.begin() + k);
+        ret._deg = ret.data_.size();
         ret.clearPrev0();
         return ret;
     }
@@ -286,12 +286,12 @@ public:
         ll k, adeg = a._deg;
         _T digit;
         b <<= (k = (a._deg - b._deg));
-        ret._data.resize(ret._deg = k + 1);
+        ret.data_.resize(ret._deg = k + 1);
         for (int i = adeg - 1; i >= adeg - 1 - k; --i) {
             if (i < a._deg) {
-                digit = a._data[i] / b._data.back();
+                digit = a.data_[i] / b.data_.back();
                 a -= b * digit;
-                ret._data[i - adeg + k + 1] = digit;
+                ret.data_[i - adeg + k + 1] = digit;
             }
             b = b >> 1;
         }
@@ -307,7 +307,7 @@ public:
         b <<= (k = (a._deg - b._deg));
         for (int i = adeg - 1; i >= adeg - 1 - k; --i) {
             if (i < a._deg) {
-                digit = a._data[i] / b._data.back();
+                digit = a.data_[i] / b.data_.back();
                 a -= b * digit;
             }
             b = b >> 1;
@@ -358,7 +358,7 @@ public:
         b <<= (k = (_deg - b._deg));
         for (int i = adeg - 1; i >= adeg - 1 - k; --i) {
             if (i < _deg) {
-                digit = _data[i] / b._data.back();
+                digit = data_[i] / b.data_.back();
                 *this -= b * digit;
             }
             b = b >> 1;
@@ -367,10 +367,10 @@ public:
     }
     
     Polynomial& getDifferentiation() {
-        for (int i = 0; i < _data.size(); ++i) {
-            _data[i] *= i;
+        for (int i = 0; i < data_.size(); ++i) {
+            data_[i] *= i;
         }
-        _data.erase(_data.begin());
+        data_.erase(data_.begin());
         --_deg;
         clearPrev0();
         return *this;
@@ -378,10 +378,10 @@ public:
     
     Polynomial differentiation() {
         Polynomial ret = *this;
-        for (int i = 0; i < ret._data.size(); ++i) {
-            ret._data[i] *= i;
+        for (int i = 0; i < ret.data_.size(); ++i) {
+            ret.data_[i] *= i;
         }
-        ret._data.erase(ret._data.begin());
+        ret.data_.erase(ret.data_.begin());
         --ret._deg;
         ret.clearPrev0();
         return ret;
@@ -389,21 +389,21 @@ public:
     
     Polynomial& makePrimitive() {
         if constexpr (std::is_same_v<_T, Fraction>) {
-            Fraction constant = _data.back();
-            for (auto &digit : _data) {
+            Fraction constant = data_.back();
+            for (auto &digit : data_) {
                 digit /= constant;
             }
         } else if constexpr (std::is_same_v<_T, BigInt>) {
-            BigInt constant = _data[0];
-            for (auto digit : _data) {
+            BigInt constant = data_[0];
+            for (auto digit : data_) {
                 constant = gcd(digit, constant);
             }
-            for (auto &digit : _data) {
+            for (auto &digit : data_) {
                 digit /= constant;
             }
         } else if constexpr (std::is_same_v<_T, mll>) {
-            mll constant = _data.back().inv();
-            for (auto &digit : _data) {
+            mll constant = data_.back().inv();
+            for (auto &digit : data_) {
                 digit *= constant;
             }
         }
@@ -414,7 +414,7 @@ public:
     ll deg() { return _deg - 1; }
     
     _T first() {
-        return _data.back();
+        return data_.back();
     }
 };
 

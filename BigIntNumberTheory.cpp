@@ -4,8 +4,13 @@
 Trair<BigInt> Bezout;
 
 namespace bigIntNumberTheory {
+	
+	// ------------------------------ 变量定义 ------------------------------
+	
     static BigInt R, R2, negR, Rpi, m, mpi, d, z;
+    
     static ll kR, r;
+    
     static const ll p[] = {0,
         2,   3,   5,   7,   11,  13,  17,  19,  23,  29,
         31,  37,  41,  43,  47,  53,  59,  61,  67,  71,
@@ -19,91 +24,159 @@ namespace bigIntNumberTheory {
         467, 479, 487, 491, 499, 503, 509, 521, 523, 541
     };
     
+    
+    // ----------------------------- 蒙哥马利约化 ------------------------------
+    
+    
     BigInt REDC(BigInt t) {
+    	
         BigInt ret = (t + ((t * mpi).getRightSub(kR) * m)) >> kR;
+        
         if (ret >= m) ret = ret - m;
+        
         return ret;
+        
     }
     
     BigInt getInv(BigInt a, BigInt n) {
+    	
         std::cout << exGcd(a, n)._b << std::endl;
+        
         return (exGcd(a, n)._b % n + n) % n;
+        
     }
     
     void init() {
+    	
         R = 1;
-        kR = 0;
+    	kR = 0;
+    	
         while (R < m) {
             ++kR;
             R <<= 1;
         }
+        
         R2 = R * R % m;
+        
         mpi = (exGcd(R - m, R)._b + R) % R;
+        
         Rpi = (exGcd(m, R)._c + m) % m;
+        
         R = REDC(R2);
+        
         negR = (REDC((m - R) * R) + m) % m;
+        
     }
     
     BigInt quickPowerMontgomery(BigInt a, BigInt b) {
+    	
         BigInt ret = R;
+        
         a = REDC(a * R2);
+        
         while (b != (BigInt)0) {
-            if (b.isOdd()) ret = REDC(ret * a);
+        	
+            if (b.isOdd()) { ret = REDC(ret * a); }
+            
             a = REDC(a * a);
+            
             b.divBy2();
+            
         }
+        
         return ret;
+        
     }
     
     BigInt quickPowerMod(BigInt a, BigInt b, BigInt mod) {
+    	
         BigInt ret = 1;
+        
         while (b != (BigInt)0) {
-            if (b.isOdd()) (ret *= a) %= mod;
+        	
+            if (b.isOdd()) { (ret *= a) %= mod; }
+            
             (a *= a) %= mod;
+            
             b.divBy2();
+            
         }
+        
         return ret;
+        
     }
     
     bool MillerRabin(BigInt a) {
+    	
         z = quickPowerMontgomery(a, d);
-        if (z == R || z == negR) return 1;
+        
+        if (z == R || z == negR) { return 1; }
+        
         for (ll i = 1; i <= r; ++i) {
-            if (z == negR) return 1;
+        	
+        	if (z == negR) { return 1; }
+        	
             z = REDC(z * z);
+            
         }
+        
         return 0;
+        
     }
     
     bool isPrime(BigInt n) {
-        if (n == (BigInt)1) return 0;
-        if (n == (BigInt)2 || n == (BigInt)5) return 1;
-        if (!n.canPassMontgomery()) return 0;
+    	
+        if (n == (BigInt)1) { return 0; }
+        if (n == (BigInt)2 || n == (BigInt)5) { return 1; }
+        if (!n.canPassMontgomery()) { return 0;}
+        
         m = n;
+        
         init();
+        
         d = m - BigInt(1);
+        
         r = 0;
+        
         while (!d.isOdd()) {
+        	
             d.divBy2();
             ++r;
+            
         }
+        
         for (int i = 1; i <= 10; ++i) {
-            if (m == (BigInt)p[i]) return 1;
-            if (m % p[i] == 0) return 0;
-            if (!MillerRabin(p[i])) return 0;
+        	
+            if (m == (BigInt)p[i]) { return 1; }
+            
+            if (m % p[i] == 0) { return 0; }
+            
+            if (!MillerRabin(p[i])) { return 0; }
+            
         }
+        
         return 1;
+        
     }
     
     BigInt randomPrime(ll k) {
+    	
         while (1) {
+        	
             while (1) {
+            	
                 m.getRandom(k);
+                
                 if (m.canPassMontgomery()) break;
+                
             }
+            
             if (isPrime(m)) break;
+            
         }
+        
         return m;
+        
     }
     
     BigInt PollardRho(BigInt n) {
@@ -242,6 +315,7 @@ namespace bigIntNumberTheory {
             }
         }
     }
+
 }
 
 #undef ll
