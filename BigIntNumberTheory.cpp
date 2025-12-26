@@ -28,6 +28,7 @@ namespace bigIntNumberTheory {
     // ----------------------------- 蒙哥马利约化 ------------------------------
     
     
+    // 这个函数等于 * R^-1
     BigInt REDC(BigInt t) {
     	
         BigInt ret = (t + ((t * mpi).getRightSub(kR) * m)) >> kR;
@@ -38,6 +39,7 @@ namespace bigIntNumberTheory {
         
     }
     
+    // 使用 exgcd 获得逆元，然后再转化为正数
     BigInt getInv(BigInt a, BigInt n) {
     	
         std::cout << exGcd(a, n)._b << std::endl;
@@ -46,16 +48,19 @@ namespace bigIntNumberTheory {
         
     }
     
+    // 蒙哥马利约化的常数设置
     void init() {
     	
         R = 1;
     	kR = 0;
     	
+    	// 因为我的 BigInt 是 1e8 进制的，所以 R 是 10 的整次幂
         while (R < m) {
             ++kR;
             R <<= 1;
         }
         
+        // 下面都是按公式来的
         R2 = R * R % m;
         
         mpi = (exGcd(R - m, R)._b + R) % R;
@@ -68,6 +73,8 @@ namespace bigIntNumberTheory {
         
     }
     
+    // 蒙哥马利域下的快速幂
+	// 传入值不在蒙哥马利域内，返回值在蒙哥马利域内
     BigInt quickPowerMontgomery(BigInt a, BigInt b) {
     	
         BigInt ret = R;
@@ -88,6 +95,7 @@ namespace bigIntNumberTheory {
         
     }
     
+    // 这是没有优化的快速幂，不过好像没用，我也懒得删了
     BigInt quickPowerMod(BigInt a, BigInt b, BigInt mod) {
     	
         BigInt ret = 1;
@@ -106,7 +114,8 @@ namespace bigIntNumberTheory {
         
     }
     
-    bool MillerRabin(BigInt a) {
+    // 米勒-罗宾算法，传入的数不在蒙哥马利域内
+	bool MillerRabin(BigInt a) {
     	
         z = quickPowerMontgomery(a, d);
         
@@ -124,6 +133,7 @@ namespace bigIntNumberTheory {
         
     }
     
+    // 判断素数，经典，无需多言
     bool isPrime(BigInt n) {
     	
         if (n == (BigInt)1) { return 0; }
@@ -159,6 +169,7 @@ namespace bigIntNumberTheory {
         
     }
     
+    // 通过拒绝采样生成素数，随机性非常大
     BigInt randomPrime(ll k) {
     	
         while (1) {
@@ -179,6 +190,7 @@ namespace bigIntNumberTheory {
         
     }
     
+    // Pollard-Rho算法，不过很慢很慢，所以没有添加
     BigInt PollardRho(BigInt n) {
         auto f = [](BigInt a, BigInt c) {
             return REDC(a * a) + c;
@@ -192,6 +204,8 @@ namespace bigIntNumberTheory {
         if (c == (BigInt)0) c = 1;
         c = REDC(c * R2);
         BigInt s = 0, t = 0;
+        
+        // 倍增优化的 Brent 判环
         for (goal = 1; tim <= k; goal.multiBy2(), s = t, val = 1, ++tim) {
             for (step = 1; step <= goal; step += 1) {
                 t = f(t, c);
@@ -206,9 +220,11 @@ namespace bigIntNumberTheory {
             d = gcd(REDC(val), m);
             if (d > (BigInt)1) return d;
         }
+        
         return m;
     }
     
+    //素因数分解，抽象的递归
     std::vector<BigInt> PrimeFactorization(BigInt n) {
         std::vector<BigInt> ret;
         for (int i = 1; i <= 20; ++i) {
@@ -237,6 +253,7 @@ namespace bigIntNumberTheory {
         return ret;
     }
     
+    // 判断是否有原根，并返回一个原根，没有优化，只是判断存在
     std::pair<bool, BigInt> havePrimitiveRootandGetPhi(BigInt n) {
         if (n == BigInt(2) || n == BigInt(4)) return {1, n.divBy2()};
         if (isPrime(n)) return {1, n - BigInt(1)};
@@ -260,6 +277,7 @@ namespace bigIntNumberTheory {
         return {1, phi};
     }
     
+    // 获得最小原根，更加慢
     BigInt getMinPrimitiveRoot(BigInt n) {
         if (n == (BigInt)2) return 1;
         if (n == (BigInt)4) return 3;

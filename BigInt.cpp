@@ -6,19 +6,19 @@
 std::string BigIntBuf;
 
 BigInt abs(BigInt a) {
-	
-    return (a < BigInt(0)) ? -a : a;
-    
+
+	return (a < BigInt(0)) ? -a : a;
+
 }
 
 BigInt::BigInt(Fraction t) {
-	
-    *this = t.numer_;
-    
+
+	*this = t.numer_;
+
 }
 
 BigInt::BigInt(mll data) {
-	
-    *this = data.data_;
-    
+
+	*this = data.data_;
+
 }

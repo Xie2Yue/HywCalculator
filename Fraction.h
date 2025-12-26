@@ -83,6 +83,7 @@ class Fraction {
     }
     
     // ----------------------------- 流式函数 -----------------------------
+    
     friend std::istream& operator >> (std::istream &Fin, Fraction &t) {
     	
         Fin >> FractionBuf;

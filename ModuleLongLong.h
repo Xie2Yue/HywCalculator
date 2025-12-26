@@ -7,8 +7,10 @@
 #define ll long long
 #define mll ModuleLongLong
 
+// 全局模数
 extern BigInt Module;
 
+// 有限域
 class ModuleLongLong {
 private:
     BigInt data_;

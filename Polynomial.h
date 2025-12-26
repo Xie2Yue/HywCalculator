@@ -12,19 +12,29 @@
 #define ll long long
 #define mll ModuleLongLong
 
+/*
+
+这位更是石中之石
+
+*/
+
+
 extern std::string PolynomialBuf;
 
 template<typename _T = Fraction>
 class Polynomial {
 private:
+	// 本来想搞树状存储的，但是无奈能力有限
     std::vector<_T> data_;
     ll _deg;
     
 public:
     template<typename U> friend class Polynomial;
     
+    
     Polynomial() : _deg(0), data_() {}
     
+    // 字符串处理多项式
     Polynomial(std::string s) {
         int pos = 0, lpos = 0;
         ll mx = 1;
@@ -56,7 +66,7 @@ public:
 				} else {
                 	data_[(ll)BigInt(u.substr(mpos + 1))] = _T(tmp);
 				}
-            } else if (int Xpos = u.find_first_of("Xx"); Xpos != std::string::npos) {
+            } else if (int Xpos = u.find_first_of("Xx"); Xpos != std::string::npos) {// 只支持单元 X/x 喵
                 if ((Xpos == 1 && u[0] == '+') || Xpos == 0) {
                 	data_[1] = 1;
 				} else if (Xpos == 1 && u[0] == '-') {
@@ -74,13 +84,15 @@ public:
         }
     }
     
+    // 从其他类型的多项式转变而来
     template<typename _U>
     Polynomial(Polynomial<_U> t) {
         _deg = t._deg;
         for (auto digit : t.data_) data_.push_back(_T(digit));
     }
     
-    template<typename _U>
+    
+    template<typename _U>// 这个其实可以使用 c++20 的 concept 实现
     Polynomial(_U digit,
         typename std::enable_if<0
             || std::is_same<_U, int>::value
@@ -98,6 +110,7 @@ public:
 		}
     }
     
+    // 这个是主动显示转化
     template<typename _U>
     Polynomial<_U> as() {
         Polynomial<_U> ret;
@@ -114,6 +127,7 @@ public:
         return ret;
     }
     
+    // 清除前导 0
     void clearPrev0() {
         while (data_.size() && data_.back() == (_T)0) {
             data_.pop_back();
@@ -121,6 +135,7 @@ public:
         }
     }
     
+    // 输出流
     friend std::ostream& operator << (std::ostream &Pout, Polynomial t) {
         if (t._deg == 0) {
             return Pout << 0;
@@ -161,12 +176,14 @@ public:
         return Pout;
     }
     
+    // 偷懒的输入流
     friend std::istream& operator >> (std::istream &Pin, Polynomial &t) {
         Pin >> PolynomialBuf;
         t = Polynomial(PolynomialBuf);
         return Pin;
     }
     
+    // 这个大小比较主要是为了处理首项系数的大小，只能说为了这盘醋包了这碟饺子
     bool operator < (const Polynomial t) const {
         if (_deg == 0) {
             return (_T)0 < t.data_[0];
@@ -220,6 +237,7 @@ public:
         return ret;
     }
     
+    // 这个还是比 BigInt 简单的
     Polynomial operator + (const Polynomial t) const {
         Polynomial ret;
         ret._deg = std::max(_deg, t._deg);
@@ -237,10 +255,12 @@ public:
         return ret;
     }
     
+    // 无需多言，恨透了 BigInt
     Polynomial operator - (const Polynomial t) const {
         return *this + (-t);
     }
     
+    // 统一乘以一个系数
     friend Polynomial operator * (Polynomial a, _T k) {
         Polynomial ret = a;
         for (auto &digit : ret.data_) {
@@ -249,6 +269,7 @@ public:
         return ret;
     }
     
+    // 无需多言，简单，我再也不想写 BigInt 了
     Polynomial operator * (const Polynomial t) const {
         Polynomial ret;
         ret.data_.resize(ret._deg = (_deg + t._deg));
@@ -261,6 +282,7 @@ public:
         return ret;
     }
     
+    // 等于 *x^k
     Polynomial operator << (const ll k) const {
         if (k <= 0) return *this;
         Polynomial ret;
@@ -270,6 +292,7 @@ public:
         return ret;
     }
     
+    // 等于 /x^k
     Polynomial operator >> (const ll k) const {
         if (k <= 0) return *this;
         if (k > _deg) return 0;
@@ -315,6 +338,8 @@ public:
         return a;
     }
     
+    
+    // 自运算 --------------------------------------------------------------------------------------------------------------------------
     Polynomial& operator += (const Polynomial t) {
         *this = *this + t;
         return *this;
@@ -366,6 +391,7 @@ public:
         return *this;
     }
     
+    // 求导
     Polynomial& getDifferentiation() {
         for (int i = 0; i < data_.size(); ++i) {
             data_[i] *= i;
@@ -376,6 +402,7 @@ public:
         return *this;
     }
     
+    // 导数
     Polynomial differentiation() {
         Polynomial ret = *this;
         for (int i = 0; i < ret.data_.size(); ++i) {
@@ -387,6 +414,7 @@ public:
         return ret;
     }
     
+    // 首一约化
     Polynomial& makePrimitive() {
         if constexpr (std::is_same_v<_T, Fraction>) {
             Fraction constant = data_.back();
@@ -413,6 +441,7 @@ public:
     
     ll deg() { return _deg - 1; }
     
+    // 首相系数
     _T first() {
         return data_.back();
     }

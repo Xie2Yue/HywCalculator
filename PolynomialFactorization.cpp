@@ -8,6 +8,7 @@
 
 namespace PolynomialFactorization {
     
+    // 去平方因子，一个求导就可以
     Polynomial<Z> makeSquareFree(Polynomial<Q> tar) {
         if (tar.deg() == 0) return 1;
         Polynomial<Q> tarpi, targcd, ret;
@@ -17,6 +18,7 @@ namespace PolynomialFactorization {
         return tar.as<Z>().makePrimitive();
     }
     
+    // 我就要打表！！！
     static const ll P[] = {0,
         2,   3,   5,   7,   11,  13,  17,  19,  23,  29,
         31,  37,  41,  43,  47,  53,  59,  61,  67,  71,
@@ -33,6 +35,8 @@ namespace PolynomialFactorization {
     std::vector<Polynomial<Z> > AnswerFactors;
     std::vector<Polynomial<mll> > HenselFactors;
     
+    // 判断并获得可以用于 Hensel 提升的有限域
+    // 这需要在有限域的分解下，多项式也是无平方因子的
     bool checkPrimeForHensel(Polynomial<Z> f, Z p) {
         Module = p;
         if (f.first() % Module == (BigInt)0) return 0;
@@ -52,6 +56,7 @@ namespace PolynomialFactorization {
         return -1;
     }
     
+    // 在模 p 下进行因式分解
     std::vector<Polynomial<mll> > firstFactorization(Polynomial<mll> f, Z p) {
         using std::cout;
         using std::endl;
@@ -69,6 +74,7 @@ namespace PolynomialFactorization {
         return ret;
     }
     
+    // 进行提升，将模数从 p^k 变为 p^{k+1}
     #define gn g.back()
     void LiftingStep(Polynomial<Z> f, std::vector<Polynomial<mll> > g, Z p, Z p2) {
         Module = p2;
@@ -76,6 +82,8 @@ namespace PolynomialFactorization {
         Polynomial<mll> Delta, G(1), ex;
         for (auto gi : g) G *= gi;
         while (g.size() >= 2) {
+        	// 这里面其实就是解方程，但是我写注释时忘记方程是什么了
+        	// 反正能解就是了！
             Module = p2;
             
             G = Polynomial<mll>(1);
@@ -126,6 +134,8 @@ namespace PolynomialFactorization {
     }
     #undef gn
     
+    // 这里是 Hensel 提升的主题，多次调用
+    // 其实多次就是 10 次，我不敢写太多，也就这样吧
     void HelselLifting(Polynomial<Q> finQ) {
         Module = 1;
         AnswerFactors.clear();
@@ -204,10 +214,11 @@ namespace PolynomialFactorization {
                 }
             }
             if (f == 1) break;
-            if (testcnt1 > 10) break;
+            if (testcnt1 > 10) break;// 只调用 10 次喵
         }
     }
     
+    // 将分解转化为字符串
     std::string Factorization(Polynomial<Q> f) {
         auto finZ = f.as<Z>();
         HelselLifting(f);

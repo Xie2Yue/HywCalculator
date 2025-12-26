@@ -48,16 +48,22 @@ enum ConsoleColor {
 
 class Console {
 private:
+	
+	// 文操
 	std::ofstream filePutter;
 	std::ifstream fileReader;
+	
+	// 这个写了，但是还没用过
     void SetColor(ConsoleColor Color) {
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color);
     }
     
+    // 让光标跑到指定位置
     void gotoPosition(int x, int y) {
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), { (short)x, (short)y });
     }
     
+    // 在指定位置输出
     template<typename _T>
     void printAtPosition(int x, int y, _T outPut, ConsoleColor Color = CC_DEFAULT) {
         SetColor(Color);
@@ -65,16 +71,17 @@ private:
         std::cout << outPut;
     }
     
+    // 稍微封装一下
     void clear() {
     	
         system("cls");
     }
-    
     void pause() {
         _getch();
     }
 
 public:
+	// 初始化控制台
     void ConSoleInitialization(const char* header) {
         SetConsoleOutputCP(65001);
         SetConsoleCP(65001);
@@ -94,6 +101,7 @@ public:
         SetConsoleCursorInfo(hStdout, &cursorInfo);
     }
     
+    // 开始界面
     void ConsoleHywStart() {
         clear();
         printAtPosition(0, 0,
@@ -125,6 +133,8 @@ public:
         pause();
     }
     
+    // 普通计算器分区 -------------------------------------------------------------------------------------------------------------------------------------
+    // 各种常数、栈、错误
     std::stack<Q> NormalCalculatorNumberStorage;
     std::stack<char> NormalCalculatorOperatorStorage;
     short parenthesesCounters, firstNumberColumn, secondNumberColumn, secondNumberRow, ConsoleLength = 80, NormalCalculatorState, lengthofDivid;
@@ -132,7 +142,9 @@ public:
     std::string NumberStreamScaner;
     char CursorOperator;
     
-    void HywNormalCalculate(int times = -1) {
+    
+    // 计算栈内存储的表达式
+    void HywNormalCalculate(int times = -1) {//沟槽的中缀表达式计算
         int cnt = 0;
         while (NormalCalculatorNumberStorage.size() > 1) {
             auto opt = NormalCalculatorOperatorStorage.top();
@@ -165,6 +177,7 @@ public:
         }
     }
     
+    // 清空普通计算器
     void ConsoleHywNormalCalculatorActionClear() {
         while (NormalCalculatorNumberStorage.size()) NormalCalculatorNumberStorage.pop();
         while (NormalCalculatorOperatorStorage.size()) NormalCalculatorOperatorStorage.pop();
@@ -190,6 +203,7 @@ public:
         );
     }
     
+    // 普通计算器的行为，只是初步封装
     void ConsoleHywNormalCalculatorAction(int opt = 1) {
         if (opt == 1) {
             NormalCalculatorNumberStorage.push(Q(NumberStreamScaner));
@@ -237,12 +251,14 @@ public:
         NormalCalculatorState = 1;
     }
     
+    // 错误
     template<typename _T>
     void ConsoleHywNormalCalculatorError(_T ErrorInformation) {
         printAtPosition(2, 1 + firstNumberColumn + 1 + secondNumberColumn + 2, ErrorInformation);
         haveError = 1;
     }
     
+    // 清空错误
     void ConsoleHywNormalCalculatorClearError() {
         if (!haveError) return;
         printAtPosition(0, 1 + firstNumberColumn + 1 + secondNumberColumn + 2,
@@ -251,6 +267,7 @@ public:
         haveError = 0;
     }
     
+    // 普通计算器主题，只支持有理数喵
     void ConsoleHywNormalCalculator() {
         ConsoleHywNormalCalculatorActionClear();
         char ch;
@@ -306,6 +323,7 @@ public:
                 NormalCalculatorState = 2;
             } else if (ch == '(') {
                 if (parenthesesCounters == 82) {
+                	// 没错，括号数是有限制的
                     ConsoleHywNormalCalculatorError("Parentheses Limits Error");
                     continue;
                 }
@@ -345,10 +363,12 @@ public:
             }
         }
     }
-
+    
+	// 数论功能分区 ------------------------------------------------------------------------------------------------------------------------------------------------------------
     Z NumberTheoryDataBigInt;
     ll NumberTheoryDataLongLongInt;
     
+    // 数论功能的核心
     void ConsoleHywNumberTheoryCalculator() {
         printConsoleHywNumberTheoryCalculator();
         char ch;
@@ -453,6 +473,7 @@ public:
         }
     }
     
+    // 数论功能的界面
     void printConsoleHywNumberTheoryCalculator() {
         clear();
         printAtPosition(0, 0,
@@ -483,6 +504,9 @@ public:
         );
     }
     
+    // 多项式功能分区 -----------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    // 多项式功能核心
     void ConsoleHywPolynomialFactorization() {
         char ch;
         while (1) {
@@ -542,6 +566,7 @@ public:
         }
     }
     
+    // 多项式功能界面
     void printConsoleHywPolynomialFactorization() {
         clear();
         printAtPosition(0, 0,
@@ -555,7 +580,10 @@ public:
         );
     }
     
+    // 图论功能 -----------------------------------------------------------------------------------------------------------------------------------------------
+    
     Graph outG;
+    // 随机图计算器核心
     void ConsoleHywRandomGraph() {
     	char ch;
     	int n = 0, m = 0, flag = 0;
@@ -587,7 +615,7 @@ public:
 					flag = 0;
 					secondNumberRow = 20;
 					filePutter.open("graph.hyw");
-					outG.createRandomSingleSourceFullConnectedGraph1(n, m);
+					outG.createRandomGraph(n, m);
 					filePutter << outG << "\n";
 					filePutter.close();
 					printAtPosition(20, 5, "已输出图到 graph.hyw");
@@ -598,6 +626,7 @@ public:
 		}
 	}
 	
+	// 随机图计算器界面
 	void printConsoleHywRandomGraph() {
         clear();
         printAtPosition(0, 0,
@@ -611,6 +640,7 @@ public:
         );
 	}
     
+    // 随机加边计算器核心
     void ConsoleHywAddNewRandomEdges() {
     	char ch;
     	int m = 0;
@@ -648,6 +678,7 @@ public:
 		}
 	}
     
+    // 随机加边计算器界面
     void printConsoleHywAddNewRandomEdges() {
         clear();
         printAtPosition(0, 0,
@@ -663,8 +694,7 @@ public:
         );
 	}
     
-    
-    
+    // 图论计算器选择
     void ConsoleHywGraphTheory() {
     	char ch;
     	while(1){
@@ -680,6 +710,7 @@ public:
 		}
 	}
     
+    // 图论计算器选择界面
     void printConsoleHywGraphTheory() {
     	clear();
         printAtPosition(0, 0,
@@ -687,7 +718,7 @@ public:
             "║                                                                                    ║\n"
             "║          选择模式:                                                                 ║\n"
             "║                                                                                    ║\n"
-            "║            1. 随机图生成(单源联通有向图)                                           ║\n"
+            "║            1. 随机图生成                                                           ║\n"
             "║                                                                                    ║\n"
             "║            2. 图增加边                                                             ║\n"
             "║                                                                                    ║\n"
@@ -710,7 +741,10 @@ public:
         );
 	}
     
-    void ConsoleHywSelect() {
+    // 开始选择 -----------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    // 开始选择
+	void ConsoleHywSelect() {
         char ch;
         while (1) {
             printConsoleHywSelect();
@@ -729,6 +763,7 @@ public:
         }
     }
     
+    // 开始选择界面
     void printConsoleHywSelect() {
         clear();
         printAtPosition(0, 0,
