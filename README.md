@@ -8,6 +8,8 @@
 
 暂不支持英文。
 
+使用时请删除 "Button.h, Console2.h, Console2.cpp" 喵！
+
 # Hyw Calculator
 
 A calculator project called "Hate Your Work".
@@ -17,3 +19,5 @@ Currently under development with incomplete features, mainly for learning projec
 Planning to implement number theory capabilities using modern C++ libraries in the future.
 
 English language support is not available at the moment.
+
+Please delete "Button.h, Console2.h, Console2.cpp" when using Nya!
