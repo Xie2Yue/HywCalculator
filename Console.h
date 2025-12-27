@@ -2,9 +2,14 @@
 #define _XIE2YUE_CONSOLE_H
 
 #include <iostream>
+#ifdef _WIN32
 #include <windows.h>
-#include <iomanip>
 #include <conio.h>
+#else
+    #define _getch() 0
+
+#endif
+#include <iomanip>
 #include <stack>
 #include <ctime>
 #include <fstream>
@@ -55,34 +60,44 @@ private:
 	
 	// 这个写了，但是还没用过
     void SetColor(ConsoleColor Color) {
+    	#ifdef _WIN32
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color);
+        #endif
     }
     
     // 让光标跑到指定位置
     void gotoPosition(int x, int y) {
+    	#ifdef _WIN32
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), { (short)x, (short)y });
+        #endif
     }
     
     // 在指定位置输出
     template<typename _T>
     void printAtPosition(int x, int y, _T outPut, ConsoleColor Color = CC_DEFAULT) {
+    	#ifdef _WIN32
         SetColor(Color);
         gotoPosition(x, y);
         std::cout << outPut;
+        #endif
     }
     
     // 稍微封装一下
     void clear() {
-    	
+    	#ifdef _WIN32
         system("cls");
+        #endif
     }
     void pause() {
+    	#ifdef _WIN32
         _getch();
+        #endif
     }
 
 public:
 	// 初始化控制台
     void ConSoleInitialization(const char* header) {
+    	#ifdef _WIN32
         SetConsoleOutputCP(65001);
         SetConsoleCP(65001);
         
@@ -99,6 +114,7 @@ public:
         GetConsoleCursorInfo(hStdout, &cursorInfo);
         cursorInfo.bVisible = FALSE;
         SetConsoleCursorInfo(hStdout, &cursorInfo);
+        #endif
     }
     
     // 开始界面
