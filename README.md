@@ -10,7 +10,9 @@
 
 编译时请删除 "Button.h, Console2.h, Console2.cpp" 喵，因为其属于开发中，且需要使用第三方库。
 
-请在**Windows**系统环境下运行，因为使用了 Windows 特有的头文件 "windows.h, conio.h"。
+请在**Windows**系统环境下编译运行，因为使用了 Windows 特有的头文件 "windows.h, conio.h"。
+
+需要 C++17 及以上
 
 # Hyw Calculator
 
@@ -25,3 +27,5 @@ English language support is not available at the moment.
 When compiling, please remove "Button.h, Console2.h, Console2.cpp" nya, as it is under development and requires the use of third-party libraries.
 
 Please run it in the **Windows** system environment because the Windows-specific header files "windows.h, conio.h" are used.
+
+C++17 or above is required.
