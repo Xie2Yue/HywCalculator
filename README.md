@@ -8,7 +8,7 @@
 
 暂不支持英文。
 
-使用时请删除 "Button.h, Console2.h, Console2.cpp" 喵！
+编译时请删除 "Button.h, Console2.h, Console2.cpp" 喵，因为其属于开发中，且需要使用第三方库。
 
 # Hyw Calculator
 
@@ -20,4 +20,4 @@ Planning to implement number theory capabilities using modern C++ libraries in t
 
 English language support is not available at the moment.
 
-Please delete "Button.h, Console2.h, Console2.cpp" when using Nya!
+Please delete "Button.h, Console2.h, Console2.cpp" when compiling Nya, as it is under development and requires the use of third-party libraries.
