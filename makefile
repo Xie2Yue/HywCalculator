@@ -8,10 +8,10 @@ BIN = HywCalculator
 all: $(BIN)
 
 $(BIN): $(OBJ)
-  $(CXX) $^ -o $@ -static-libgcc
+    $(CXX) $^ -o $@ -static-libgcc
 
 %.o: %.cpp
-  $(CXX) $(CXXFLAGS) -c $< -o $@
+    $(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-  rm -f $(OBJ) $(BIN)
+    rm -f $(OBJ) $(BIN)
